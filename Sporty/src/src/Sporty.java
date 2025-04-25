@@ -66,6 +66,8 @@ public class Sporty {
 		JButton btnPrikazTerena = new JButton("Prikaz terena");
 		btnPrikazTerena.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				PrikazTerena dlg = new PrikazTerena();
+				dlg.setVisible(true);
 			}
 		});
 		frmUnos.getContentPane().add(btnPrikazTerena);
