@@ -82,6 +82,12 @@ public class Sporty {
 		frmUnos.getContentPane().add(label_4);
 		
 		JButton btnUnosOpreme = new JButton("Unos opreme");
+		btnUnosOpreme.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DlgUnosOpreme dlg = new DlgUnosOpreme();
+				dlg.setVisible(true);
+			}
+		});
 		frmUnos.getContentPane().add(btnUnosOpreme);
 		
 		JLabel label = new JLabel("");
