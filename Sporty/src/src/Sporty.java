@@ -136,6 +136,12 @@ public class Sporty {
 		frmUnos.getContentPane().add(label_11);
 		
 		JButton btnUnosKorisnika = new JButton("Unos korisnika");
+		btnUnosKorisnika.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DlgUnosKorisnika dlg = new DlgUnosKorisnika();
+				dlg.setVisible(true);
+			}
+		});
 		frmUnos.getContentPane().add(btnUnosKorisnika);
 		
 		JLabel label_12 = new JLabel("");
@@ -144,6 +150,9 @@ public class Sporty {
 		JButton btnPrikazKorisnika = new JButton("Prikaz korisnika");
 		btnPrikazKorisnika.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				PrikazKorisnika prikazKorisnika = new PrikazKorisnika();
+				prikazKorisnika.setVisible(true);
+				
 			}
 		});
 		frmUnos.getContentPane().add(btnPrikazKorisnika);
