@@ -124,9 +124,7 @@ public class DlgUnosRezervacije extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						/*
-						 * Sporty sporty = new Sporty(); sporty.setVisible(true);
-						 */
+						dispose();
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
