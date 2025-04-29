@@ -82,7 +82,7 @@ public class DlgPrikazRezervacije extends JDialog {
 				Object newInstance = Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 				Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
 				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery("SELECT * FROM narudzbe");
+				ResultSet rs = stmt.executeQuery("SELECT * FROM rezervacije");
 				while (rs.next()) {
 					int sifra_narudzbe =rs.getInt(1);
 					int sifra_korisnika = rs.getInt(2);
