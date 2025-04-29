@@ -103,7 +103,7 @@ public class DlgUnosRezervacije extends JDialog {
 							Connection conn = DriverManager
 									.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
 							PreparedStatement stmt = conn.prepareStatement(
-									"INSERT INTO narudzbe (sifra_korisnika,datum_iznajmljivanja, datum_vracanja) VALUES(?,?,?)");
+									"INSERT INTO rezervacije (sifra_korisnika,datum_iznajmljivanja, datum_vracanja) VALUES(?,?,?)");
 							stmt.setString(1, ime);
 							stmt.setString(2, pocVrijeme);
 							stmt.setString(3, zavrVrijeme);
