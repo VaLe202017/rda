@@ -15,7 +15,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import net.miginfocom.swing.MigLayout;
 
 public class Sporty {
-
+	
 	private JFrame frmUnos;
 
 	/**
@@ -96,6 +96,8 @@ public class Sporty {
 		JButton btnPrikazOpreme = new JButton("Prikaz opreme");
 		btnPrikazOpreme.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				PrikazOpreme prikazOpreme = new PrikazOpreme();
+				prikazOpreme.setVisible(true);
 			}
 		});
 		frmUnos.getContentPane().add(btnPrikazOpreme);
@@ -130,6 +132,7 @@ public class Sporty {
 
 			}
 		});
+		
 		frmUnos.getContentPane().add(btnPrikazRezervacije);
 		
 		JLabel label_9 = new JLabel("");
