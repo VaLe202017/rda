@@ -176,12 +176,24 @@ public class Sporty {
 		frmUnos.getContentPane().add(label_15);
 		
 		JButton btnUnos = new JButton("Unos administratora");
+		btnUnos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DlgUnosAdmina dlgUnosAdmina= new DlgUnosAdmina();
+				dlgUnosAdmina.setVisible(true);
+			}
+		});
 		frmUnos.getContentPane().add(btnUnos);
 		
 		JLabel label_16 = new JLabel("");
 		frmUnos.getContentPane().add(label_16);
 		
 		JButton btnPrikazAdministratora = new JButton("Prikaz administratora");
+		btnPrikazAdministratora.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PrikazAdmina prikazAdmina= new PrikazAdmina();
+				prikazAdmina.setVisible(true);
+			}
+		});
 		frmUnos.getContentPane().add(btnPrikazAdministratora);
 		
 		JLabel label_17 = new JLabel("");
