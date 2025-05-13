@@ -14,6 +14,9 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import net.miginfocom.swing.MigLayout;
 
+import com.toedter.calendar.JCalendar;
+import javax.swing.*;
+
 public class Sporty {
 	
 	private JFrame frmUnos;
@@ -190,8 +193,13 @@ public class Sporty {
 		JButton btnPrikazAdministratora = new JButton("Prikaz administratora");
 		btnPrikazAdministratora.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				/*
 				PrikazAdmina prikazAdmina= new PrikazAdmina();
 				prikazAdmina.setVisible(true);
+				*/
+		        JCalendar calendar = new JCalendar();
+		        calendar.setBounds(50, 50, 300, 200);
+		        calendar.setVisible(true);
 			}
 		});
 		frmUnos.getContentPane().add(btnPrikazAdministratora);
@@ -211,6 +219,11 @@ public class Sporty {
 		JLabel label_21 = new JLabel("");
 		frmUnos.getContentPane().add(label_21);
 		
+		JCalendar calendar = new JCalendar();
+        
+		frmUnos.getContentPane().add(calendar);
+		calendar.setBounds(50, 50, 300, 200);
+
 		JLabel label_22 = new JLabel("");
 		frmUnos.getContentPane().add(label_22);
 		
