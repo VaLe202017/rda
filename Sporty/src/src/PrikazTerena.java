@@ -1,30 +1,18 @@
 package src;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class PrikazTerena extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	JTextArea taPrikazTerena;
+	private JTextArea taPrikazTerena;
+	private JComboBox<String> cbLokacije;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		try {
 			PrikazTerena dialog = new PrikazTerena();
@@ -35,68 +23,101 @@ public class PrikazTerena extends JDialog {
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public PrikazTerena() {
 		setTitle("Prikaz terena");
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 500, 400);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		{
-			JScrollPane scrollPane = new JScrollPane();
-			scrollPane.setBounds(10, 11, 414, 206);
-			contentPanel.add(scrollPane);
-			{
-				taPrikazTerena = new JTextArea();
-				scrollPane.setViewportView(taPrikazTerena);
-			}
-		}
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
-		PrikazTerena();
+
+		JLabel lblLokacija = new JLabel("Odaberi lokaciju:");
+		lblLokacija.setBounds(10, 10, 120, 25);
+		contentPanel.add(lblLokacija);
+
+		cbLokacije = new JComboBox<>();
+		cbLokacije.setBounds(130, 10, 200, 25);
+		contentPanel.add(cbLokacije);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 50, 460, 250);
+		contentPanel.add(scrollPane);
+
+		taPrikazTerena = new JTextArea();
+		taPrikazTerena.setEditable(false);
+		scrollPane.setViewportView(taPrikazTerena);
+
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton btnClose = new JButton("Zatvori");
+		btnClose.addActionListener(e -> dispose());
+		buttonPane.add(btnClose);
+
+		// Učitaj lokacije i dodaj listener
+		ucitajLokacije();
+		cbLokacije.addActionListener(e -> prikaziTerenPoLokaciji((String) cbLokacije.getSelectedItem()));
 	}
-	public void PrikazTerena() {
+
+	private void ucitajLokacije() {
 		try {
-				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-				Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?" + "user=lvalenta&password=11");
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery("SELECT * FROM Tereni");
-				while (rs.next()) {
-					int id =rs.getInt(1);
-					String naziv = rs.getString(2);
-					String radno_vrijeme = rs.getString(3);
-					String lokacija = rs.getString(4);
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?" +
+					"user=lvalenta&password=11");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT DISTINCT lokacija FROM Tereni ORDER BY lokacija");
 
-						
-					taPrikazTerena.append(naziv+" "+radno_vrijeme+" "+lokacija+"\n");
-				}
-				conn.close();
-			} catch (Exception ex) {
-				System.out.println(ex.toString());
+			while (rs.next()) {
+				cbLokacije.addItem(rs.getString("lokacija"));
 			}
+
+			conn.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
+	}
 
+	private void prikaziTerenPoLokaciji(String lokacija) {
+	    taPrikazTerena.setText(""); // Očisti prikaz
 
+	    String upit = "SELECT T.naziv, T.lokacija, T.radno_vrijeme, COUNT(R.sifra_terena) AS broj_rezervacija " +
+	                  "FROM Tereni T " +
+	                  "LEFT JOIN rezervacije R ON T.sifra_terena = R.sifra_terena " +
+	                  "WHERE T.lokacija = ? " +
+	                  "GROUP BY T.naziv, T.lokacija, T.radno_vrijeme";
+
+	    try {
+	        Class.forName("com.mysql.cj.jdbc.Driver");
+	        Connection conn = DriverManager.getConnection(
+	                "jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+
+	        PreparedStatement pstmt = conn.prepareStatement(upit);
+	        pstmt.setString(1, lokacija);
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        boolean imaRezultata = false;
+
+	        while (rs.next()) {
+	            imaRezultata = true;
+	            String naziv = rs.getString("naziv");
+	            String radnoVrijeme = rs.getString("radno_vrijeme");
+	            int brojRezervacija = rs.getInt("broj_rezervacija");
+
+	            taPrikazTerena.append("Naziv: " + naziv +
+	                    ", Radno vrijeme: " + radnoVrijeme +
+	                    ", Broj rezervacija: " + brojRezervacija + "\n");
+	        }
+
+	        if (!imaRezultata) {
+	            taPrikazTerena.setText("Nema dostupnih terena za odabranu lokaciju.");
+	        }
+
+	        conn.close();
+	    } catch (Exception ex) {
+	        taPrikazTerena.setText("Greška: " + ex.getMessage());
+	        ex.printStackTrace();
+	    }
+	}
 }
