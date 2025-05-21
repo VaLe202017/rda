@@ -2,36 +2,23 @@ package src;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import java.awt.GridLayout;
-import javax.swing.JTextField;
-import javax.swing.BoxLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.awt.event.ActionEvent;
+import com.toedter.calendar.JDateChooser;
 
 public class DlgUnosRezervacije extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtUnosVrijemePoc;
-	private JTextField txtUnosVrijemeZavr;
-	private JTextField txtUnosIme;
 
-	/**
-	 * Launch the application.
-	 */
+	private JComboBox<String> korisnikCombo;
+	private JComboBox<String> terenCombo;
+	private JDateChooser datePocetak;
+	private JDateChooser dateKraj;
+
 	public static void main(String[] args) {
 		try {
 			DlgUnosRezervacije dialog = new DlgUnosRezervacije();
@@ -42,95 +29,124 @@ public class DlgUnosRezervacije extends JDialog {
 		}
 	}
 
-	/**
-	 * Create the dialog.
-	 */
 	public DlgUnosRezervacije() {
+		setTitle("Unos nove rezervacije");
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.WEST);
-		contentPanel.setLayout(new FormLayout(
-				new ColumnSpec[] { ColumnSpec.decode("140px"), ColumnSpec.decode("109px:grow"),
-						FormSpecs.LABEL_COMPONENT_GAP_COLSPEC, ColumnSpec.decode("45px"),
-						FormSpecs.LABEL_COMPONENT_GAP_COLSPEC, ColumnSpec.decode("45px"), },
-				new RowSpec[] { FormSpecs.UNRELATED_GAP_ROWSPEC, RowSpec.decode("19px"), FormSpecs.RELATED_GAP_ROWSPEC,
-						FormSpecs.DEFAULT_ROWSPEC, FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC,
-						FormSpecs.RELATED_GAP_ROWSPEC, FormSpecs.DEFAULT_ROWSPEC, }));
-		{
-			JLabel lbUnosVremenaPoc = new JLabel("Unesite početno vrijeme");
-			contentPanel.add(lbUnosVremenaPoc, "1, 4, center, center");
-		}
-		{
-			txtUnosVrijemePoc = new JTextField();
-			contentPanel.add(txtUnosVrijemePoc, "2, 4, fill, default");
-			txtUnosVrijemePoc.setColumns(10);
-		}
-		{
-			JLabel lblUnosZavrsnogVremena = new JLabel("Unesite završno vrijeme");
-			contentPanel.add(lblUnosZavrsnogVremena, "1, 6, center, center");
-		}
-		{
-			txtUnosVrijemeZavr = new JTextField();
-			contentPanel.add(txtUnosVrijemeZavr, "2, 6, fill, default");
-			txtUnosVrijemeZavr.setColumns(10);
-		}
-		{
-			JLabel lblUnosImena = new JLabel("Unesite ime");
-			contentPanel.add(lblUnosImena, "1, 8, center, center");
-		}
-		{
-			txtUnosIme = new JTextField();
-			contentPanel.add(txtUnosIme, "2, 8, fill, default");
-			txtUnosIme.setColumns(10);
-		}
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						String pocVrijeme = txtUnosVrijemePoc.getText();
-						String zavrVrijeme = txtUnosVrijemeZavr.getText();
-						String ime = txtUnosIme.getText();
-						System.out.println(
-								"Početno vrijeme: " + pocVrijeme + " Završno vrijeme: " + zavrVrijeme + " Ime: " + ime);
+		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(null);
 
-						try {
-							Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-							Connection conn = DriverManager
-									.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
-							PreparedStatement stmt = conn.prepareStatement(
-									"INSERT INTO rezervacije (sifra_korisnika,datum_iznajmljivanja, datum_vracanja) VALUES(?,?,?)");
-							stmt.setString(1, ime);
-							stmt.setString(2, pocVrijeme);
-							stmt.setString(3, zavrVrijeme);
-							stmt.execute();
+		JLabel lblKorisnik = new JLabel("Odaberi korisnika:");
+		lblKorisnik.setBounds(10, 10, 150, 20);
+		contentPanel.add(lblKorisnik);
 
-							conn.close();
-						} catch (Exception ex) {
-							System.out.println(ex.toString());
-						}
+		korisnikCombo = new JComboBox<>();
+		korisnikCombo.setBounds(180, 10, 200, 25);
+		contentPanel.add(korisnikCombo);
 
-					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+		JLabel lblTeren = new JLabel("Odaberi teren:");
+		lblTeren.setBounds(10, 45, 150, 20);
+		contentPanel.add(lblTeren);
+
+		terenCombo = new JComboBox<>();
+		terenCombo.setBounds(180, 45, 200, 25);
+		contentPanel.add(terenCombo);
+
+		JLabel lblDatumPocetka = new JLabel("Datum iznajmljivanja:");
+		lblDatumPocetka.setBounds(10, 80, 150, 20);
+		contentPanel.add(lblDatumPocetka);
+
+		datePocetak = new JDateChooser();
+		datePocetak.setBounds(180, 80, 200, 25);
+		contentPanel.add(datePocetak);
+
+		JLabel lblDatumZavrsetka = new JLabel("Datum vraćanja:");
+		lblDatumZavrsetka.setBounds(10, 115, 150, 20);
+		contentPanel.add(lblDatumZavrsetka);
+
+		dateKraj = new JDateChooser();
+		dateKraj.setBounds(180, 115, 200, 25);
+		contentPanel.add(dateKraj);
+
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton okButton = new JButton("Spremi");
+		okButton.addActionListener(e -> unesiRezervaciju());
+		buttonPane.add(okButton);
+		getRootPane().setDefaultButton(okButton);
+
+		JButton cancelButton = new JButton("Odustani");
+		cancelButton.addActionListener(e -> dispose());
+		buttonPane.add(cancelButton);
+
+		ucitajKorisnike();
+		ucitajTerene();
+	}
+
+	private void ucitajKorisnike() {
+		try {
+			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT sifra_korisnika, ime_korisnika, prezime_korisnika FROM korisnik");
+
+			while (rs.next()) {
+				String ime = rs.getString("ime_korisnika");
+				String prezime = rs.getString("prezime_korisnika");
+				korisnikCombo.addItem(ime + " " + prezime);
 			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
+			conn.close();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Greška kod učitavanja korisnika: " + ex.getMessage());
 		}
 	}
 
+	private void ucitajTerene() {
+		try {
+			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT naziv FROM Tereni");
+
+			while (rs.next()) {
+				String naziv = rs.getString("naziv");
+				terenCombo.addItem(naziv);
+			}
+			conn.close();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Greška kod učitavanja terena: " + ex.getMessage());
+		}
+	}
+
+	private void unesiRezervaciju() {
+		try {
+			if (korisnikCombo.getSelectedItem() == null || terenCombo.getSelectedItem() == null || datePocetak.getDate() == null || dateKraj.getDate() == null) {
+				JOptionPane.showMessageDialog(this, "Molimo ispunite sva polja.");
+				return;
+			}
+
+			int sifraKorisnika = Integer.parseInt(korisnikCombo.getSelectedItem().toString().split(" - ")[0]);
+			int sifraTerena = Integer.parseInt(terenCombo.getSelectedItem().toString().split(" - ")[0]);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String datumPocetak = sdf.format(datePocetak.getDate());
+			String datumKraj = sdf.format(dateKraj.getDate());
+
+			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+			PreparedStatement stmt = conn.prepareStatement(
+					"INSERT INTO rezervacije (datum_iznajmljivanja, datum_vracanja, sifra_terena) VALUES (?, ?, ?)");
+
+			stmt.setString(1, datumPocetak);
+			stmt.setString(2, datumKraj);
+			stmt.setInt(3, sifraTerena);
+			stmt.executeUpdate();
+
+			conn.close();
+			JOptionPane.showMessageDialog(this, "Rezervacija uspješno unesena.");
+			dispose();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(this, "Greška kod unosa: " + ex.getMessage());
+		}
+	}
 }
