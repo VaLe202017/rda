@@ -218,11 +218,7 @@ public class Sporty {
 		
 		JLabel label_21 = new JLabel("");
 		frmUnos.getContentPane().add(label_21);
-		
-		JCalendar calendar = new JCalendar();
-        
-		frmUnos.getContentPane().add(calendar);
-		calendar.setBounds(50, 50, 300, 200);
+
 
 		JLabel label_22 = new JLabel("");
 		frmUnos.getContentPane().add(label_22);
