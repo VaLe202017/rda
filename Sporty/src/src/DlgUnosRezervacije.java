@@ -95,7 +95,8 @@ public class DlgUnosRezervacije extends JDialog {
 			while (rs.next()) {
 				String ime = rs.getString("ime_korisnika");
 				String prezime = rs.getString("prezime_korisnika");
-				korisnikCombo.addItem(ime + " " + prezime);
+				int sifraKorisnika= rs.getInt("sifra_korisnika");
+				korisnikCombo.addItem(sifraKorisnika + " - " + ime + " " + prezime);
 			}
 			conn.close();
 		} catch (Exception ex) {
@@ -107,11 +108,12 @@ public class DlgUnosRezervacije extends JDialog {
 		try {
 			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT naziv FROM Tereni");
+			ResultSet rs = stmt.executeQuery("SELECT sifra_terena, naziv FROM Tereni");
 
 			while (rs.next()) {
+				int sifraTerena=rs.getInt("sifra_terena");
 				String naziv = rs.getString("naziv");
-				terenCombo.addItem(naziv);
+				terenCombo.addItem(sifraTerena+" - "+naziv);
 			}
 			conn.close();
 		} catch (Exception ex) {
@@ -135,11 +137,11 @@ public class DlgUnosRezervacije extends JDialog {
 
 			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
 			PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO rezervacije (datum_iznajmljivanja, datum_vracanja, sifra_terena) VALUES (?, ?, ?)");
-
-			stmt.setString(1, datumPocetak);
-			stmt.setString(2, datumKraj);
-			stmt.setInt(3, sifraTerena);
+					"INSERT INTO rezervacije (sifra_korisnika, datum_iznajmljivanja, datum_vracanja, sifra_terena) VALUES (?, ?, ?, ?)");
+			stmt.setInt(1, sifraKorisnika);
+			stmt.setString(2, datumPocetak);
+			stmt.setString(3, datumKraj);
+			stmt.setInt(4, sifraTerena);
 			stmt.executeUpdate();
 
 			conn.close();
