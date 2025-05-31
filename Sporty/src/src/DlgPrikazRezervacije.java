@@ -50,7 +50,6 @@ public class DlgPrikazRezervacije extends JDialog {
 		taPrikazRezervacija = new JTextArea();
 		scrollPane.setViewportView(taPrikazRezervacija);
 
-		// JCalendar komponenta
 		dateChooser = new JDateChooser();
 		dateChooser.setBounds(10, 260, 150, 25);
 		contentPanel.add(dateChooser);
