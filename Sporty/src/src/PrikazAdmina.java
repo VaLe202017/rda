@@ -91,6 +91,47 @@ public class PrikazAdmina extends JDialog {
 						
 					taPrikazAdmina.append("ID: "+id+" |username: "+user+" |password: "+pass+"\n");
 				}
+				taPrikazAdmina.append("\n=== REZERVACIJE ===\n");
+
+		        // Prikaz rezervacija s korisnikom, terenom i artiklima
+		        String upit = "SELECT r.sifra_narudzbe, r.datum_iznajmljivanja, r.datum_vracanja, r.ukupan_iznos, " +
+		                      "k.ime_korisnika, k.prezime_korisnika, t.naziv AS naziv_terena, a.naziv_artikla " +
+		                      "FROM rezervacije r " +
+		                      "JOIN korisnik k ON r.sifra_korisnika = k.sifra_korisnika " +
+		                      "LEFT JOIN Tereni t ON r.sifra_terena = t.sifra_terena " +
+		                      "LEFT JOIN stavke_narudzbe s ON r.sifra_narudzbe = s.sifra_narudzbe " +
+		                      "LEFT JOIN artikli a ON s.sifra_artikla = a.sifra_artikla " +
+		                      "ORDER BY r.sifra_narudzbe";
+
+		        rs = stmt.executeQuery(upit);
+
+		        int zadnjaNarudzba = -1;
+		        while (rs.next()) {
+		            int sifraNarudzbe = rs.getInt("sifra_narudzbe");
+		            String datumOd = rs.getString("datum_iznajmljivanja");
+		            String datumDo = rs.getString("datum_vracanja");
+		            float iznos = rs.getFloat("ukupan_iznos");
+		            String ime = rs.getString("ime_korisnika");
+		            String prezime = rs.getString("prezime_korisnika");
+		            String teren = rs.getString("naziv_terena");
+		            String artikl = rs.getString("naziv_artikla");
+
+		            if (sifraNarudzbe != zadnjaNarudzba) {
+		                if (zadnjaNarudzba != -1) {
+		                    taPrikazAdmina.append("\n");
+		                }
+		                taPrikazAdmina.append("Narudžba #" + sifraNarudzbe +
+		                        " | Datum: " + datumOd + " - " + datumDo +
+		                        " | Iznos: " + iznos + "\n");
+		                taPrikazAdmina.append("Korisnik: " + ime + " " + prezime + "\n");
+		                taPrikazAdmina.append("Teren: " + (teren != null ? teren : "Nepoznat") + "\n");
+		                taPrikazAdmina.append("Artikli: " + (artikl != null ? artikl : "Nema stavki"));
+		            } else {
+		                taPrikazAdmina.append(", " + artikl);
+		            }
+
+		            zadnjaNarudzba = sifraNarudzbe;
+		        }
 				conn.close();
 			} catch (Exception ex) {
 				System.out.println(ex.toString());
