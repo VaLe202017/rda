@@ -2,122 +2,155 @@ package src;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import java.sql.*;
+import java.util.ArrayList;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 public class DlgUnosOpreme extends JDialog {
 
-	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
-	private JTextField txtUnosNaziva;
-	private JTextField txtUnosKolicine;
-	private JTextField txtCijene;
+    private static final long serialVersionUID = 1L;
+    private final JPanel contentPanel = new JPanel();
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			DlgUnosOpreme dialog = new DlgUnosOpreme();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private JTextField txtUnosNaziva;
+    private JTextField txtUnosKolicine;
+    private JTextField txtCijene;
+    private JComboBox<String> comboTipArtikla;
+    private JComboBox<String> comboTereni;
 
-	/**
-	 * Create the dialog.
-	 */
-	public DlgUnosOpreme() {
-		setTitle("Unos opreme");
-		setBounds(100, 100, 583, 303);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
+    private ArrayList<Integer> tipArtiklaIDs = new ArrayList<>();
+    private ArrayList<Integer> tereniIDs = new ArrayList<>();
 
-		JLabel lblNewLabel = new JLabel("Unos naziva artikla");
-		lblNewLabel.setBounds(10, 31, 95, 35);
-		contentPanel.add(lblNewLabel);
+    public static void main(String[] args) {
+        try {
+            DlgUnosOpreme dialog = new DlgUnosOpreme();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-		JLabel lblUnosKolicine = new JLabel("Unos dostupne količine");
-		lblUnosKolicine.setBounds(10, 95, 173, 35);
-		contentPanel.add(lblUnosKolicine);
+    public DlgUnosOpreme() {
+        setTitle("Unos opreme");
+        setBounds(100, 100, 600, 300);
+        getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
+        contentPanel.setLayout(null);
 
-		JLabel lblCijene = new JLabel("Unos cijene/dan");
-		lblCijene.setBounds(10, 162, 106, 35);
-		contentPanel.add(lblCijene);
+        JLabel lblNaziv = new JLabel("Naziv artikla:");
+        lblNaziv.setBounds(10, 10, 150, 25);
+        contentPanel.add(lblNaziv);
 
-		txtUnosNaziva = new JTextField();
-		txtUnosNaziva.setBounds(145, 38, 173, 19);
-		contentPanel.add(txtUnosNaziva);
-		txtUnosNaziva.setColumns(10);
+        txtUnosNaziva = new JTextField();
+        txtUnosNaziva.setBounds(170, 10, 200, 25);
+        contentPanel.add(txtUnosNaziva);
 
-		txtUnosKolicine = new JTextField();
-		txtUnosKolicine.setColumns(10);
-		txtUnosKolicine.setBounds(145, 102, 173, 19);
-		contentPanel.add(txtUnosKolicine);
+        JLabel lblKolicina = new JLabel("Dostupna količina:");
+        lblKolicina.setBounds(10, 45, 150, 25);
+        contentPanel.add(lblKolicina);
 
-		txtCijene = new JTextField();
-		txtCijene.setColumns(10);
-		txtCijene.setBounds(145, 169, 173, 19);
-		contentPanel.add(txtCijene);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				ActionListener l = new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						String naziv_artikla = txtUnosNaziva.getText();
-						String dostupna_kolicina = txtUnosKolicine.getText();
-						String cijena_dan = txtCijene.getText();
-						System.out.println("Naziv: ," + naziv_artikla + " Količina: ," + dostupna_kolicina + " Cijena: ," + cijena_dan);
+        txtUnosKolicine = new JTextField();
+        txtUnosKolicine.setBounds(170, 45, 200, 25);
+        contentPanel.add(txtUnosKolicine);
 
-						try {
-							Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-							Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?" + "user=lvalenta&password=11");
-							PreparedStatement stmt = conn.prepareStatement("INSERT INTO artikli (naziv_artikla," + "dostupna_kolicina," + "Cijena_dan) VALUES(?,?,?)");
-							stmt.setString(1, naziv_artikla);
-							stmt.setString(2, dostupna_kolicina);
-							stmt.setString(3, cijena_dan);
-							stmt.execute();
+        JLabel lblCijena = new JLabel("Cijena po danu:");
+        lblCijena.setBounds(10, 80, 150, 25);
+        contentPanel.add(lblCijena);
 
-							conn.close();
-						} catch (Exception ex) {
-							System.out.println(ex.toString());
-						}
-					}
+        txtCijene = new JTextField();
+        txtCijene.setBounds(170, 80, 200, 25);
+        contentPanel.add(txtCijene);
 
-				};
-				okButton.addActionListener(l);
+        JLabel lblTip = new JLabel("Tip artikla:");
+        lblTip.setBounds(10, 115, 150, 25);
+        contentPanel.add(lblTip);
 
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
-	}
+        comboTipArtikla = new JComboBox<>();
+        comboTipArtikla.setBounds(170, 115, 200, 25);
+        contentPanel.add(comboTipArtikla);
+
+        JLabel lblTeren = new JLabel("Teren:");
+        lblTeren.setBounds(10, 150, 150, 25);
+        contentPanel.add(lblTeren);
+
+        comboTereni = new JComboBox<>();
+        comboTereni.setBounds(170, 150, 200, 25);
+        contentPanel.add(comboTereni);
+
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+        JButton okButton = new JButton("Spremi");
+        okButton.addActionListener(e -> unesiArtikl());
+        buttonPane.add(okButton);
+        getRootPane().setDefaultButton(okButton);
+
+        JButton cancelButton = new JButton("Odustani");
+        cancelButton.addActionListener(e -> dispose());
+        buttonPane.add(cancelButton);
+
+        ucitajTipoveArtikla();
+        ucitajTerene();
+    }
+
+    private void ucitajTipoveArtikla() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT sifra_tipa_artikla, tip_artikla FROM tip_artikla");
+
+            while (rs.next()) {
+                tipArtiklaIDs.add(rs.getInt("sifra_tipa_artikla"));
+                comboTipArtikla.addItem(rs.getString("tip_artikla"));
+            }
+            conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Greška kod učitavanja tipova: " + ex.getMessage());
+        }
+    }
+
+    private void ucitajTerene() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT sifra_terena, naziv FROM Tereni");
+
+            while (rs.next()) {
+                tereniIDs.add(rs.getInt("sifra_terena"));
+                comboTereni.addItem(rs.getString("naziv"));
+            }
+            conn.close();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Greška kod učitavanja terena: " + ex.getMessage());
+        }
+    }
+
+    private void unesiArtikl() {
+        try {
+            String naziv = txtUnosNaziva.getText();
+            int kolicina = Integer.parseInt(txtUnosKolicine.getText());
+            float cijena = Float.parseFloat(txtCijene.getText());
+            int sifraTipa = tipArtiklaIDs.get(comboTipArtikla.getSelectedIndex());
+            int sifraTerena = tereniIDs.get(comboTereni.getSelectedIndex());
+
+            Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO artikli (naziv_artikla, dostupna_kolicina, cijena_dan, sifra_tipa_artikla, Sifra_terena) VALUES (?, ?, ?, ?, ?)");
+            stmt.setString(1, naziv);
+            stmt.setInt(2, kolicina);
+            stmt.setFloat(3, cijena);
+            stmt.setInt(4, sifraTipa);
+            stmt.setInt(5, sifraTerena);
+
+            stmt.executeUpdate();
+            conn.close();
+
+            JOptionPane.showMessageDialog(this, "Artikl uspješno unesen.");
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Greška kod unosa: " + ex.getMessage());
+        }
+    }
 }
