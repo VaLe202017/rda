@@ -78,45 +78,38 @@ public class PrikazKorisnika extends JDialog {
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?" + "user=lvalenta&password=11");
 			Statement stmt = conn.createStatement();
-
 			String upit = """
-				SELECT 
-					k.sifra_korisnika,
-					k.ime_korisnika,
-					k.prezime_korisnika,
-					k.broj_telefona_korisnika,
-					k.email_korisnika,
-					r.datum_iznajmljivanja,
-					r.datum_vracanja,
-					r.ukupan_iznos,
-					t.naziv AS naziv_terena,
-					t.lokacija AS lokacija_terena
-				FROM 
-					korisnik k
-				LEFT JOIN 
-					rezervacije r ON k.sifra_korisnika = r.sifra_korisnika
-				LEFT JOIN 
-					Tereni t ON r.sifra_terena = t.sifra_terena
-				ORDER BY 
-					k.sifra_korisnika, r.datum_iznajmljivanja DESC
-			""";
+					SELECT 
+						k.sifra_korisnika,
+						k.ime_korisnika,
+						k.prezime_korisnika,
+						k.broj_telefona_korisnika,
+						k.email_korisnika,
+						COUNT(r.sifra_narudzbe) AS broj_rezervacija
+					FROM 
+						korisnik k
+					LEFT JOIN 
+						rezervacije r ON k.sifra_korisnika = r.sifra_korisnika
+					GROUP BY 
+						k.sifra_korisnika, k.ime_korisnika, k.prezime_korisnika, 
+						k.broj_telefona_korisnika, k.email_korisnika
+					ORDER BY 
+						k.sifra_korisnika
+				""";
 
 			ResultSet rs = stmt.executeQuery(upit);
 
 			while (rs.next()) {
 				String ispis = String.format(
-					"%d. %s %s | Tel: %s | Email: %s\n  Rezervacija: %s - %s | Iznos: %.2f HRK\n  Teren: %s | Lokacija: %s\n\n",
-					rs.getInt("sifra_korisnika"),
-					rs.getString("ime_korisnika"),
-					rs.getString("prezime_korisnika"),
-					rs.getString("broj_telefona_korisnika"),
-					rs.getString("email_korisnika"),
-					rs.getDate("datum_iznajmljivanja"),
-					rs.getDate("datum_vracanja"),
-					rs.getFloat("ukupan_iznos"),
-					rs.getString("naziv_terena"),
-					rs.getString("lokacija_terena")
-				);
+						"%d. %s %s | Tel: %s | Email: %s\n  Broj rezervacija: %d\n\n",
+						rs.getInt("sifra_korisnika"),
+						rs.getString("ime_korisnika"),
+						rs.getString("prezime_korisnika"),
+						rs.getString("broj_telefona_korisnika"),
+						rs.getString("email_korisnika"),
+						rs.getInt("broj_rezervacija")
+					);
+
 				taPrikazKorisnika.append(ispis);
 			}
 
