@@ -193,13 +193,9 @@ public class Sporty {
 		JButton btnPrikazAdministratora = new JButton("Prikaz administratora");
 		btnPrikazAdministratora.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/*
 				PrikazAdmina prikazAdmina= new PrikazAdmina();
 				prikazAdmina.setVisible(true);
-				*/
-		        JCalendar calendar = new JCalendar();
-		        calendar.setBounds(50, 50, 300, 200);
-		        calendar.setVisible(true);
+				
 			}
 		});
 		frmUnos.getContentPane().add(btnPrikazAdministratora);
