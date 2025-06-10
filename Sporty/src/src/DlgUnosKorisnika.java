@@ -111,19 +111,22 @@ public class DlgUnosKorisnika extends JDialog {
 			String broj = textUnosBroja.getText().trim();
 			String email = textUnosEmail.getText().trim();
 			String spol = comboSpol.getSelectedItem().toString();
-			System.out.println("IME: " + ime + ", PREZIME: " + prezime + ", TEL: " + broj + ", EMAIL: " + email + ", SPOL: " + spol);
+			String tip = comboTip.getSelectedItem().toString();
+			System.out.println("IME: " + ime + ", PREZIME: " + prezime + ", TEL: " + broj + ", EMAIL: " + email + ", SPOL: " + spol + "TIP KORISNIKA: "+tip);
 
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 				Connection conn = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr/lvalenta?user=lvalenta&password=11");
 
 				PreparedStatement stmt = conn.prepareStatement(
-					"INSERT INTO korisnik (ime_korisnika, prezime_korisnika, broj_telefona_korisnika, email_korisnika) VALUES (?, ?, ?, ?)"
+					"INSERT INTO korisnik (ime_korisnika, prezime_korisnika, broj_telefona_korisnika, email_korisnika, spol, tip_korisnika) VALUES (?, ?, ?, ?, ?, ?)"
 				);
 				stmt.setString(1, ime);
 				stmt.setString(2, prezime);
 				stmt.setString(3, broj);
 				stmt.setString(4, email);
+				stmt.setString(5, spol);
+				stmt.setString(6, tip);
 				stmt.executeUpdate();
 
 				conn.close();
